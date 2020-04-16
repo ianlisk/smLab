@@ -20,9 +20,9 @@ class SampleArrival extends ScheduledAction
 	{
 		// WArrival Action Sequence SCS
 	     Sample icSample = new Sample();
-	     icSample.uType = model.rvp.uCustomerType();
+//	     icSample.uType = model.rvp.uCustomerType();
 	     icSample.startWaitTime = model.getClock(); 
-	     model.qCustLine.add(icSample);
+	     model.qNewSample.add(icSample);
 	}
 
 

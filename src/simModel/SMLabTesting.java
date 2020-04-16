@@ -2,7 +2,6 @@ package simModel;
 
 import java.util.ArrayList;
 
-import kkSimModel.Customer;
 import simulationModelling.AOSimulationModel;
 import simulationModelling.Behaviour;
 import simulationModelling.SequelActivity;

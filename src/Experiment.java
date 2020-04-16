@@ -24,8 +24,8 @@ class Experiment
        System.out.println(" Case 1");
        for(i=0 ; i < NUMRUNS ; i++)
        {
-          mname = new SMLabTesting(startTime,endTime,sds[i]);
-          mname.runSimulation();
+//          mname = new SMLabTesting(startTime,endTime,sds[i]);
+//          mname.runSimulation();
           // See examples for hints on collecting output
           // and developping code for analysis
        }
