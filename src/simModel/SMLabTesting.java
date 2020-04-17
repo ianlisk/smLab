@@ -23,6 +23,7 @@ public class SMLabTesting extends AOSimulationModel {
 	protected InputBuffer[] qInputBuffer = new InputBuffer[6];
     OutputBuffer[] qOutputBuffer = new OutputBuffer[6];
 	Tester[][] rcTester = new Tester[5][];
+	SampleHolder[] rSampleHolder;
 
 	/* Input Variables */
 	// Define any Independent Input Varaibles here
@@ -73,10 +74,10 @@ public class SMLabTesting extends AOSimulationModel {
 		scheduleAction(init); // Should always be first one scheduled.
 		// Schedule other scheduled actions and acitvities here
 		SampleArrival aSampleArr = new SampleArrival(this);
-		scheduleAction(aSampleArr); // Start arrivals
+		scheduleAction(aSampleArr); // Start SampleArrival
 		Move seqAct = new Move();
 		seqAct.startingEvent();
-		scheduleActivity(seqAct); // Start MoveLoop SequelActivity
+		scheduleActivity(seqAct); // Start Move 
 	}
 
 	/************ Implementation of Data Modules ***********/

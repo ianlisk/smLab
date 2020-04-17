@@ -1,16 +1,15 @@
 package simModel;
 
-
 import simulationModelling.Activity;
 
 class Testing extends Activity {
-	
+
 	protected final static int[] NONE = {};
-	
+
 	static SMLabTesting model;
 
-	private int[] ids; //[cid, tid] 
-	private int shid; //
+	private int[] ids; //[cid, tid]
+	private int shid; 
 	private double procTime;
 
 	public static boolean precondition() {
@@ -42,15 +41,11 @@ class Testing extends Activity {
 			model.rcTester[ids[0]][ids[1]].timeToFail -= procTime;
 
 		}
-//		model.rSampleHolder[shid].sample.step += 1;
-//		model.output.testCompleted(ids[0], procTime); // GAComment: THis is a
-														// UDP and should be
-														// implemented here, not
-														// in the Ouput class.
+		model.rSampleHolder[shid].sample.step += 1;
 	}
 
-	/* 
-	 * UDPs 
+	/*
+	 * UDPs
 	 */
 	protected static int[] cellToStartTest() {
 		for (int cid : Constants.DEFAULT_CID_ARRAY) {
@@ -58,7 +53,7 @@ class Testing extends Activity {
 				for (int tid = 0; tid < model.numTesters[cid]; tid++) {
 					Tester tester = model.rcTester[cid][tid];
 					if (tester.status == Tester.Status.IDLE) {
-						return new int[]{cid, tid};
+						return new int[] { cid, tid };
 					}
 				}
 			}

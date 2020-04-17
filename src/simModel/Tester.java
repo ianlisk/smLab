@@ -2,7 +2,7 @@ package simModel;
 
 class Tester {
 	protected enum Status {
-		BUSY, MAINTENANCE, CLEANING, IDLE
+		BUSY, DOWN, IDLE
 	};
 
 	protected Status status;
