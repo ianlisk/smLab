@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="E:/0_UO/Courses/SYS5110/group/java_project/SMLabTesting/lib/absmodjV3_20171114.jar"/>
-	<classpathentry kind="lib" path="E:/0_UO/Courses/SYS5110/group/java_project/SMLabTesting/lib/colt.jar"/>
-	<classpathentry kind="lib" path="E:/0_UO/Courses/SYS5110/group/java_project/SMLabTesting/lib/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/absmodjV3_20171114.jar"/>
+	<classpathentry kind="lib" path="lib/colt.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
