@@ -1,24 +1,27 @@
 package simModel;
 
-class DVPs 
-{
-	SMLabTesting model;  // for accessing the clock
-	
+class DVPs {
+	SMLabTesting model; // for accessing the clock
+
 	// Constructor
-	protected DVPs(SMLabTesting model) { this.model = model; }
+	protected DVPs(SMLabTesting model) {
+		this.model = model;
+	}
 
 	// Translate deterministic value procedures into methods
-        /* -------------------------------------------------
-	                       Example
-	protected double getEmpNum()  // for getting next value of EmpNum(t)
-	{
-	   double nextTime;
-	   if(model.clock == 0.0) nextTime = 90.0;
-	   else if(model.clock == 90.0) nextTime = 210.0;
-	   else if(model.clock == 210.0) nextTime = 420.0;
-	   else if(model.clock == 420.0) nextTime = 540.0;
-	   else nextTime = -1.0;  // stop scheduling
-	   return(nextTime);
+	protected double uTestTime(int cid) {
+		switch(cid){
+			case Constants.C1:
+				return 0.77 * 60;
+			case Constants.C2:
+				return 0.85 * 60;
+			case Constants.C3:
+				return 1.03 * 60;
+			case Constants.C4:
+				return 1.24 * 60;
+			case Constants.C5:
+				return 1.7 * 60;
+		}
+		return 0.0;
 	}
-	------------------------------------------------------------*/
 }

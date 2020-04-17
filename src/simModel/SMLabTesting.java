@@ -20,6 +20,9 @@ public class SMLabTesting extends AOSimulationModel {
 	// entities with scope Set and Unary
 	// Objects can be created here or in the Initialise Action
 	protected ArrayList<Sample> qNewSample = new ArrayList<Sample>();
+	protected InputBuffer[] qInputBuffer = new InputBuffer[6];
+    OutputBuffer[] qOutputBuffer = new OutputBuffer[6];
+	Tester[][] rcTester = new Tester[5][];
 
 	/* Input Variables */
 	// Define any Independent Input Varaibles here
