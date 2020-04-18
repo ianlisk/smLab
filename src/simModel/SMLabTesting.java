@@ -7,6 +7,10 @@ import simulationModelling.Behaviour;
 import simulationModelling.SequelActivity;
 
 public class SMLabTesting extends AOSimulationModel {
+	
+	public void SMLabTesting(){
+		
+	}
 	// Constants available from Constants class
 	/* Parameter */
 	// Define the parameters
@@ -60,7 +64,7 @@ public class SMLabTesting extends AOSimulationModel {
 		this.logicConfiguration = logicConfiguration;
 
 		// Create RVP object with given seed
-		rvp = new RVPs(this, sd);
+//		rvp = new RVPs(this, sd);
 
 		// rgCounter and qCustLine objects created in Initalise Action
 
@@ -80,6 +84,13 @@ public class SMLabTesting extends AOSimulationModel {
 		scheduleActivity(seqAct); // Start Move 
 	}
 
+	/**
+	 * 
+	 */
+	public SMLabTesting() {
+		 // TODO Auto-generated constructor stub
+	}
+
 	/************ Implementation of Data Modules ***********/
 	/*
 	 * Testing preconditions
@@ -87,7 +98,11 @@ public class SMLabTesting extends AOSimulationModel {
 	protected void testPreconditions(Behaviour behObj) {
 		reschedule(behObj);
 		// Check preconditions of Conditional Activities
-
+		if (Testing.precondition() == true) {
+			Testing act = new Testing();
+			act.startingEvent();
+			scheduleActivity(act);
+		}
 		// Check preconditions of Interruptions in Extended Activities
 	}
 
