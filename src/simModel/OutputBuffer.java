@@ -2,18 +2,14 @@ package simModel;
 
 import java.util.ArrayList;
 
-class OutputBuffer
-{
+class OutputBuffer {
 	protected ArrayList<Integer> list = new ArrayList<>();
-		
-	/* 
-	 * TODO 我们paper中没有OutputBuffer udp这部分
-	 * UPDs */
-	protected void spInsertQueue(int sid) {
+
+	protected void insert(int sid) {
 		list.add(sid);
 	}
-	
-	protected int spRemoveQueue() {		
+
+	protected int remove() {
 		int sid = list.remove(0);
 		return sid;
 	}

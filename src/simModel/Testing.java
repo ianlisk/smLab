@@ -8,8 +8,8 @@ class Testing extends Activity {
 
 	static SMLabTesting model;
 
-	private int[] ids; //[cid, tid]
-	private int shid; 
+	private int[] ids; // [cid, tid]
+	private int shid;
 	private double procTime;
 
 	public static boolean precondition() {
@@ -20,7 +20,7 @@ class Testing extends Activity {
 	public void startingEvent() {
 		ids = cellToStartTest();
 		model.rcTester[ids[0]][ids[1]].status = Tester.Status.BUSY;
-		shid = model.qInputBuffer[ids[0]].spRemoveQueue();
+		shid = model.qInputBuffer[ids[0]].remove();
 		procTime = model.dvp.uTestTime(ids[0]);
 	}
 
@@ -31,7 +31,7 @@ class Testing extends Activity {
 
 	@Override
 	public void terminatingEvent() {
-		model.qOutputBuffer[ids[0]].spInsertQueue(shid);
+		model.qOutputBuffer[ids[0]].insert(shid);
 		model.rcTester[ids[0]][ids[1]].status = Tester.Status.IDLE;
 
 		if (ids[0] == Constants.C2) {
@@ -49,6 +49,9 @@ class Testing extends Activity {
 	 */
 	protected static int[] cellToStartTest() {
 		for (int cid : Constants.DEFAULT_CID_ARRAY) {
+			// System.out.println("********************************Testing
+			// cellToStartTest qInputBuffer[" + cid
+			// + "].list = " + model.qInputBuffer[cid].list);
 			if (model.qInputBuffer[cid].list.size() > 0) {
 				for (int tid = 0; tid < model.numTesters[cid]; tid++) {
 					Tester tester = model.rcTester[cid][tid];

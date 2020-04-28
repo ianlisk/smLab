@@ -3,18 +3,31 @@ package simModel;
 import simulationModelling.ScheduledAction;
 
 class SampleArrival extends ScheduledAction {
-	SMLabTesting model; // reference to model object
+	static SMLabTesting model; // reference to model object
 
 	public SampleArrival(SMLabTesting model) {
 		this.model = model;
 	}
 
+	@Override
 	public void actionEvent() {
-		// WArrival Action Sequence SCS
-		Sample icSample = new Sample();
-		// icSample.uType = model.rvp.uCustomerType();
-		icSample.time = model.getClock();
-		model.qNewSample.add(icSample);
+		// Sample icSample = new Sample();
+		// icSample.time = model.getClock();
+		// model.qNewSample.add(icSample);
+
+		Sample iCSample = new Sample();
+		iCSample.time = model.getClock();
+		iCSample.rush = model.rvp.duRush();
+		iCSample.step = 0;
+		iCSample.sequence = model.rvp.uGetSequence();
+		if (iCSample.rush == true) {
+			model.qNewSampleBuffer.addHead(iCSample);
+
+		} else {
+			model.qNewSampleBuffer.addTail(iCSample);
+
+		}
+
 	}
 
 	/*
@@ -24,8 +37,7 @@ class SampleArrival extends ScheduledAction {
 	 */
 	@Override
 	protected double timeSequence() {
-		return model.rvp.duSampleArrival();
+		return model.rvp.duSampleArr();
 	}
-	
 
 }

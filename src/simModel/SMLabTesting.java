@@ -1,16 +1,10 @@
 package simModel;
 
-import java.util.ArrayList;
-
 import simulationModelling.AOSimulationModel;
 import simulationModelling.Behaviour;
-import simulationModelling.SequelActivity;
 
 public class SMLabTesting extends AOSimulationModel {
-	
-	public void SMLabTesting(){
-		
-	}
+
 	// Constants available from Constants class
 	/* Parameter */
 	// Define the parameters
@@ -23,18 +17,21 @@ public class SMLabTesting extends AOSimulationModel {
 	// Define the reference variables to the various
 	// entities with scope Set and Unary
 	// Objects can be created here or in the Initialise Action
-	protected ArrayList<Sample> qNewSample = new ArrayList<Sample>();
+	// protected ArrayList<Sample> qNewSample = new ArrayList<Sample>();
 	protected InputBuffer[] qInputBuffer = new InputBuffer[6];
-    OutputBuffer[] qOutputBuffer = new OutputBuffer[6];
+	OutputBuffer[] qOutputBuffer = new OutputBuffer[6];
 	Tester[][] rcTester = new Tester[5][];
 	SampleHolder[] rSampleHolder;
+	LoadUnloadDevice rLoadUnloadDevice = new LoadUnloadDevice();
+	TransportationLoop rqTransportationLoop = new TransportationLoop();
+	NewSampleBuffer qNewSampleBuffer = new NewSampleBuffer();
 
 	/* Input Variables */
 	// Define any Independent Input Varaibles here
 
 	// References to RVP and DVP objects
-	protected RVPs rvp; // Reference to rvp object - object created in
-						// constructor
+	protected RVPs rvp; // Reference to rvp object - object
+						// created in constructor
 	protected DVPs dvp = new DVPs(this); // Reference to dvp object
 	protected UDPs udp = new UDPs(this);
 
@@ -57,21 +54,30 @@ public class SMLabTesting extends AOSimulationModel {
 
 	// Constructor
 	public SMLabTesting(double t0time, double tftime, int[] numTesters, int numSampleHolders,
-			Boolean logicConfiguration, Seeds sd) {
+			Boolean logicConfiguration, Seeds sd, boolean log) {
 		// Initialise parameters here
 		this.numTesters = numTesters;
 		this.numSampleHolders = numSampleHolders;
 		this.logicConfiguration = logicConfiguration;
+		// For turning on logging
+		logFlag = log;
+
+		DVPs.model = this;
+		Initialise.model = this;
+		RepairClean.model = this;
+		Move.model = this;
+		Output.model = this;
+		RVPs.model = this;
+		SampleArrival.model = this;
+		Testing.model = this;
+		LogPrinter.model = this;
+		LoadUnload.model = this;
 
 		// Create RVP object with given seed
-//		rvp = new RVPs(this, sd);
-
-		// rgCounter and qCustLine objects created in Initalise Action
+		rvp = new RVPs(sd);
 
 		// Initialise the simulation model
-		initAOSimulModel(t0time, tftime); // TODO initAOSimulModel(t0time,
-											// t0time + 7200); // steady-state
-											// study
+		initAOSimulModel(t0time, tftime);
 
 		// Schedule the first arrivals
 		Initialise init = new Initialise(this);
@@ -81,14 +87,14 @@ public class SMLabTesting extends AOSimulationModel {
 		scheduleAction(aSampleArr); // Start SampleArrival
 		Move seqAct = new Move();
 		seqAct.startingEvent();
-		scheduleActivity(seqAct); // Start Move 
+		scheduleActivity(seqAct);// Start Move
 	}
 
 	/**
 	 * 
 	 */
 	public SMLabTesting() {
-		 // TODO Auto-generated constructor stub
+		// TODO Auto-generated constructor stub
 	}
 
 	/************ Implementation of Data Modules ***********/
@@ -98,28 +104,74 @@ public class SMLabTesting extends AOSimulationModel {
 	protected void testPreconditions(Behaviour behObj) {
 		reschedule(behObj);
 		// Check preconditions of Conditional Activities
+		while (scanPreconditions() == true)
+			/* repeat */;
+
+		// Check preconditions of Interruptions in Extended Activities
+	}
+
+	// Single scan of all preconditions
+	// Returns true if at least one precondition was true.
+	private boolean scanPreconditions() {
+		boolean statusChanged = false;
+		// Conditional Actions
+		if (RepairClean.precondition() == true) {
+			RepairClean act = new RepairClean();
+			act.startingEvent();
+			scheduleActivity(act);
+			statusChanged = true;
+		}
+		// System.out.printf("================================after RepairClean
+		// sbl begin statusChanged=%s =",
+		// statusChanged + "\n");
+		// showSBL();
+		if (LoadUnload.precondition() == true) {
+			LoadUnload act = new LoadUnload();
+			act.startingEvent();
+			scheduleActivity(act);
+			statusChanged = true;
+		}
+		// System.out.printf("================================afterLoadUnload
+		// sbl begin statusChanged=%s =",
+		// statusChanged + "\n");
+		// showSBL();
 		if (Testing.precondition() == true) {
 			Testing act = new Testing();
 			act.startingEvent();
 			scheduleActivity(act);
+			statusChanged = true;
 		}
-		// Check preconditions of Interruptions in Extended Activities
+		// System.out.printf("================================after Testing sbl
+		// begin statusChanged=%s =",
+		// statusChanged + "\n");
+		// showSBL();
+		return (statusChanged);
 	}
+
+	/*
+	 * public void eventOccured() { LogPrinter.print(); this.showSBL(); // Can
+	 * add other debug code to monitor the status of the system // See examples
+	 * for suggestions on setup logging
+	 * 
+	 * // Setup an updateTrjSequences() method in the Output class // and call
+	 * here if you have Trajectory Sets // updateTrjSequences() }
+	 */
 
 	public void eventOccured() {
-		// this.showSBL();
-		// Can add other debug code to monitor the status of the system
-		// See examples for suggestions on setup logging
-
-		// Setup an updateTrjSequences() method in the Output class
-		// and call here if you have Trajectory Sets
-		// updateTrjSequences()
+		if (logFlag)
+			printDebug();
 	}
 
-	// Standard Procedure to start Sequel Activities with no parameters
-	protected void spStart(SequelActivity seqAct) {
-		seqAct.startingEvent();
-		scheduleActivity(seqAct);
+	// for Debugging
+	boolean logFlag = false;
+
+	protected void printDebug() {
+		// Debugging
+		System.out.println(">-----------------------------------------------<");
+		System.out.printf("Clock = %10.4f\n", getClock());
+		LogPrinter.print();
+		showSBL();
+		System.out.println(">-----------------------------------------------<");
 	}
 
 }
