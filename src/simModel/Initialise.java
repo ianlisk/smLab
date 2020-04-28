@@ -75,43 +75,58 @@ class Initialise extends ScheduledAction {
 		model.qNewSampleBuffer.list = new ArrayList<>();
 	}
 
-	// 最终效果是传送带上随机分布着sh，sh序号作为数组元素存储在model.rqTransportationLoop.position中
 	private void udpPlaceSampleHolder() {
-		int num = model.numSampleHolders - 1; // SampleHolder个数，default 20，
-												// num代表sh序号
-		System.out.println("*************************udpPlaceSampleHolder num = " + num);
+		int shNum = model.numSampleHolders - 1; // SampleHolder个数，default 20，
+		// loadUnload area
 		if (model.logicConfiguration == false) {
-			while (model.qInputBuffer[Constants.LU].isAvailable() && num >= 0) {
-				model.qInputBuffer[Constants.LU].insert(num);
-				num -= 1;
+			while (model.qInputBuffer[Constants.LU].isAvailable() && shNum >= 0) {
+				model.qInputBuffer[Constants.LU].insert(shNum);
+				shNum--;
 			}
 		} else {
 			while (model.qInputBuffer[Constants.LU].list.size() < Constants.LU_BUFFER_SUGGESTED_WAITING_NUMBER
-					&& num >= 0) {
-				model.qInputBuffer[Constants.LU].insert(num);
-				num -= 1;
+					&& shNum >= 0) {
+				model.qInputBuffer[Constants.LU].insert(shNum);
+				shNum--;
 			}
 		}
-		// 生成0-47个整数序列
+		// transportationLoop
+		sequencePlaceSh2Loop(shNum);
+		System.out.println("*************************udpPlaceSampleHolder rqTransportLoop.list = "
+				+ Arrays.toString(model.rqTransportationLoop.position));
+	}
+
+	private void sequencePlaceSh2Loop(int shNum) {
+		for (int i = 0; i < Constants.LOOP_SIZE; i++) {
+			model.rqTransportationLoop.position[i] = shNum;
+			shNum--;
+			if (shNum < 0)
+				break;
+		}
+	}
+
+	/**
+	 * sh is randomly distributed on the conveyor belt, and the sh sequence
+	 * number is stored as an array element in
+	 * model.rqTransportationLoop.position
+	 */
+	private void randomPlaceSh2Loop(int shNum) {
+		// Generate integer sequence, range 0-47
 		ArrayList<Integer> positions = new ArrayList<>();
 		for (int i = 0; i < Constants.LOOP_SIZE; i++) {
 			positions.add(i);
 		}
-		System.out.println("*************************udpPlaceSampleHolder positions = " + positions.toString());
-		Collections.shuffle(positions);// 将上述序列重新随机排列
-		System.out.println("*************************udpPlaceSampleHolder positions = " + positions.toString());
-		System.out.println("*************************udpPlaceSampleHolder rqTransportLoop.list = "
-				+ Arrays.toString(model.rqTransportationLoop.position));
+		Collections.shuffle(positions);// Rearrange the above sequence randomly
+		// System.out.println("*************************udpPlaceSampleHolder
+		// rqTransportLoop.list = "
+		// + Arrays.toString(model.rqTransportationLoop.position));
 		for (int pos : positions) {
-			System.out.println("num = " + num);
-			model.rqTransportationLoop.position[pos] = num;
-			num -= 1;
-			if (num < 0)
-				break; // 将num值随机赋给传送带中num个单元
+			System.out.println("num = " + shNum);
+			model.rqTransportationLoop.position[pos] = shNum;
+			shNum--;
+			if (shNum < 0)
+				break; // Randomly assign shNum units in the conveyor belt
 		}
-
-		System.out.println("*************************udpPlaceSampleHolder rqTransportLoop.list = "
-				+ Arrays.toString(model.rqTransportationLoop.position));
 	}
 
 	private void udpInitInputBuffer() {

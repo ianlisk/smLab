@@ -17,7 +17,7 @@ class Validation {
 		System.out.println("Validation\n");
 		// Validation for 1 hours
 		model = new SMLabTesting(startTime, startTime + 60, new int[] { 5, 5, 4, 5, 4 },
-				Constants.INIT_NUM_SAMPLE_HOLDERS, false, sds, true);
+				Constants.INIT_NUM_SAMPLE_HOLDERS, true, sds, true);
 
 		model.runSimulation();
 
