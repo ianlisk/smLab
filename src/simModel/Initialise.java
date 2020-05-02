@@ -1,7 +1,6 @@
 package simModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import simModel.Tester.Status;
@@ -37,6 +36,7 @@ class Initialise extends ScheduledAction {
 	private void udpInitSampleHolders() {
 		model.rSampleHolder = new SampleHolder[model.numSampleHolders];
 		for (int sid = 0; sid < model.numSampleHolders; sid++) {
+			// Initial sampleHolders and put into rSampleHolder
 			SampleHolder sampleHolders = new SampleHolder();
 			sampleHolders.sample = NO_SAMPLE;
 			model.rSampleHolder[sid] = sampleHolders;
@@ -52,13 +52,14 @@ class Initialise extends ScheduledAction {
 	private void udpInitTester() {
 		model.rcTester = new Tester[5][];
 		for (int cid : Constants.DEFAULT_CID_ARRAY) {
-
 			model.rcTester[cid] = new Tester[model.numTesters[cid]];
 			for (int tid = 0; tid < model.numTesters[cid]; tid++) {
+				// create a Tester object and then reference to
+				// model.rcTester[cid][tid]
 				Tester t = new Tester();
 				t.status = Status.IDLE;
 				t.timeToFail = model.rvp.uTimeToFailure(cid);
-				t.numOps = 0;
+				t.numTests = 0;
 				model.rcTester[cid][tid] = t;
 			}
 		}
@@ -76,33 +77,38 @@ class Initialise extends ScheduledAction {
 	}
 
 	private void udpPlaceSampleHolder() {
-		int shNum = model.numSampleHolders - 1; // SampleHolder个数，default 20，
+		int shIndex = model.numSampleHolders - 1; // index of Sample Holders
 		// loadUnload area
-		if (model.logicConfiguration == false) {
-			while (model.qInputBuffer[Constants.LU].isAvailable() && shNum >= 0) {
-				model.qInputBuffer[Constants.LU].insert(shNum);
-				shNum--;
+		if (model.logicConfiguration == LoadUnloadDevice.logicType.CURRENT_LOGIC) {
+			while (model.qInputBuffer[Constants.LU].isAvailable() && shIndex >= 0) {
+				model.qInputBuffer[Constants.LU].insert(shIndex);
+				shIndex--;
 			}
 		} else {
 			while (model.qInputBuffer[Constants.LU].list.size() < Constants.LU_BUFFER_SUGGESTED_WAITING_NUMBER
-					&& shNum >= 0) {
-				model.qInputBuffer[Constants.LU].insert(shNum);
-				shNum--;
+					&& shIndex >= 0) {
+				model.qInputBuffer[Constants.LU].insert(shIndex);
+				shIndex--;
 			}
 		}
 		// transportationLoop
-		sequencePlaceSh2Loop(shNum);
-		System.out.println("*************************udpPlaceSampleHolder rqTransportLoop.list = "
-				+ Arrays.toString(model.rqTransportationLoop.position));
+		sequencePlaceSh2Loop(shIndex);
+		// randomPlaceSh2Loop(shIndex);
+		// System.out.println("************************* Initial
+		// udpPlaceSampleHolder rqTransportLoop.list = "
+		// + Arrays.toString(model.rqTransportationLoop.position));
 	}
 
 	private void sequencePlaceSh2Loop(int shNum) {
-		for (int i = 0; i < Constants.LOOP_SIZE; i++) {
-			model.rqTransportationLoop.position[i] = shNum;
-			shNum--;
-			if (shNum < 0)
-				break;
+		if (shNum >= 0) {
+			for (int i = 0; i < Constants.LOOP_SIZE; i++) {
+				model.rqTransportationLoop.position[i] = shNum;
+				shNum--;
+				if (shNum < 0)
+					break;
+			}
 		}
+
 	}
 
 	/**
@@ -121,7 +127,7 @@ class Initialise extends ScheduledAction {
 		// rqTransportLoop.list = "
 		// + Arrays.toString(model.rqTransportationLoop.position));
 		for (int pos : positions) {
-			System.out.println("num = " + shNum);
+//			System.out.println("num = " + shNum);
 			model.rqTransportationLoop.position[pos] = shNum;
 			shNum--;
 			if (shNum < 0)

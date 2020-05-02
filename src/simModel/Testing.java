@@ -21,7 +21,7 @@ class Testing extends Activity {
 		ids = cellToStartTest();
 		model.rcTester[ids[0]][ids[1]].status = Tester.Status.BUSY;
 		shid = model.qInputBuffer[ids[0]].remove();
-		procTime = model.dvp.uTestTime(ids[0]);
+		procTime = uTestTime(ids[0]);
 	}
 
 	@Override
@@ -35,12 +35,14 @@ class Testing extends Activity {
 		model.rcTester[ids[0]][ids[1]].status = Tester.Status.IDLE;
 
 		if (ids[0] == Constants.C2) {
-			model.rcTester[Constants.C2][ids[1]].numOps += 1;
+			model.rcTester[Constants.C2][ids[1]].numTests += 1;
 
 		} else {
 			model.rcTester[ids[0]][ids[1]].timeToFail -= procTime;
 
 		}
+//		System.out.println("----------------------Testing shid = " + shid + "; sample="
+//				+ model.rSampleHolder[shid].sample.toString());
 		model.rSampleHolder[shid].sample.step += 1;
 	}
 
@@ -62,6 +64,25 @@ class Testing extends Activity {
 			}
 		}
 		return NONE;
+	}
+
+	/*
+	 * DVPs
+	 */
+	protected double uTestTime(int cid) {
+		switch (cid) {
+		case Constants.C1:
+			return 0.77;
+		case Constants.C2:
+			return 0.85;
+		case Constants.C3:
+			return 1.03;
+		case Constants.C4:
+			return 1.24;
+		case Constants.C5:
+			return 1.7;
+		}
+		return 0.0;
 	}
 
 }

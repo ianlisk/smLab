@@ -8,35 +8,53 @@ class RepairClean extends Activity {
 	private int[] ids; // [cid, tid]
 
 	public static boolean precondition() {
-		return testerRequireRC() != NONE;
+		return udpTesterRequiredRC() != NONE;
 	}
 
 	@Override
 	public void startingEvent() {
-		ids = testerRequireRC();
-		model.rcTester[ids[0]][ids[1]].status = Tester.Status.DOWN;
+		ids = udpTesterRequiredRC();
+		int cid = ids[0];
+		int tid = ids[1];
+		model.rcTester[cid][tid].status = Tester.Status.DOWN;
+		if (cid == Constants.C2)
+			model.rcTester[cid][tid].numTests = 0;
 	}
 
 	@Override
 	public double duration() {
-		return model.rvp.uRepairTime(ids[0]) + model.rcTester[ids[0]][ids[1]].timeToFail;
+		int cid = ids[0];
+		int tid = ids[1];
+		// return model.rvp.uRepairTime(cid) +
+		// model.rcTester[cid][tid].timeToFail;
+		return model.rvp.uRepairCleanTime(cid);
 	}
 
 	@Override
 	public void terminatingEvent() {
-		model.rcTester[ids[0]][ids[1]].status = Tester.Status.IDLE;
-		model.rcTester[ids[0]][ids[1]].timeToFail = model.rvp.uTimeToFailure(ids[0]);
+		int cid = ids[0];
+		int tid = ids[1];
+		model.rcTester[cid][tid].status = Tester.Status.IDLE;
+		if (cid != Constants.C2)
+			model.rcTester[cid][tid].timeToFail = model.rvp.uTimeToFailure(cid);
 	}
 
 	/* UDPs */
-	protected static int[] testerRequireRC() {
+	protected static int[] udpTesterRequiredRC() {
 		for (int cid : Constants.DEFAULT_CID_ARRAY) {
-			if (cid == Constants.C2)
-				continue;
-			for (int tid = 0; tid < model.numTesters[cid]; tid++) {
-				if (model.rcTester[cid][tid].status != Tester.Status.DOWN
-						&& model.rcTester[cid][tid].timeToFail < model.dvp.uTestTime(cid)) {
-					return new int[] { cid, tid };
+			Tester[] testers = model.rcTester[cid];
+			if (cid == Constants.C2) {
+				for (int tid = 0; tid < testers.length; tid++) {
+					if (testers[tid].numTests == Constants.TESTS_BEFORE_CLEAN) {
+						return new int[] { cid, tid };
+					}
+				}
+			} else {
+				for (int tid = 0; tid < model.numTesters[cid]; tid++) {
+					if (testers[tid].status != Tester.Status.DOWN
+							&& testers[tid].timeToFail < model.testing.uTestTime(cid)) {
+						return new int[] { cid, tid };
+					}
 				}
 			}
 		}

@@ -21,7 +21,7 @@ class LoadUnload extends Activity {
 		sid = model.qInputBuffer[Constants.LU].remove();
 
 		if (model.rSampleHolder[sid].sample != NONE) {
-			model.output.SampleTested(model.rSampleHolder[sid].sample);
+			model.output.sampleTested(model.rSampleHolder[sid].sample);
 			model.rSampleHolder[sid].sample = NONE;
 		}
 	}

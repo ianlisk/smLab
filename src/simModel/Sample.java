@@ -5,8 +5,8 @@ import java.util.Arrays;
 class Sample {
 	/**
 	 * A vector value represents the sequence of testers that the sample will go
-	 * through: <x,x,x,END> where x is one of the cell identifiers (C1 to C5)
-	 * and END is used to flag that the end of the sequence has been reached.
+	 * through: <x,x,x,LU> where x is one of the cell identifiers (C1 to C5) and
+	 * LU is used to flag that the end of the sequence has been reached.
 	 */
 	protected int[] sequence;
 	protected boolean rush;

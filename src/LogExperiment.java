@@ -1,6 +1,5 @@
 
 import cern.jet.random.engine.RandomSeedGenerator;
-import simModel.Constants;
 import simModel.SMLabTesting;
 import simModel.Seeds;
 
@@ -28,10 +27,12 @@ public class LogExperiment {
 		System.out.println("Conveyor Limits: " + lc2 + ", " + lc3);
 		printDSOVsHeader();
 		for (i = 0; i < NUMRUNS; i++) {
-			model = new SMLabTesting(startTime, startTime + 1440, new int[] { 4, 5, 4, 5, 4 },
-					Constants.INIT_NUM_SAMPLE_HOLDERS, true, sds, true);
-			model.runSimulation();
-			printDSOVs(i + 1, model);
+			// model = new SMLabTesting(startTime, startTime + 1440, new int[] {
+			// 4, 5, 4, 5, 4 },
+			// Constants.INIT_NUM_SAMPLE_HOLDERS,
+			// LoadUnloadDevice.logicType.CURRENT_LOGIC, sds, true);
+			// model.runSimulation();
+			// printDSOVs(i + 1, model);
 		}
 	}
 

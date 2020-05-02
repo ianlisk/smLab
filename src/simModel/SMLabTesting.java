@@ -10,7 +10,7 @@ public class SMLabTesting extends AOSimulationModel {
 	// Define the parameters
 	public int[] numTesters = new int[5];
 	public int numSampleHolders;
-	public boolean logicConfiguration;
+	public LoadUnloadDevice.logicType logicConfiguration;
 
 	/*-------------Entity Data Structures-------------------*/
 	/* Group and Queue Entities */
@@ -20,7 +20,7 @@ public class SMLabTesting extends AOSimulationModel {
 	// protected ArrayList<Sample> qNewSample = new ArrayList<Sample>();
 	protected InputBuffer[] qInputBuffer = new InputBuffer[6];
 	OutputBuffer[] qOutputBuffer = new OutputBuffer[6];
-	Tester[][] rcTester = new Tester[5][];
+	Tester[][] rcTester = new Tester[Constants.NUM_TESTERS_IN_CELL][];
 	SampleHolder[] rSampleHolder;
 	LoadUnloadDevice rLoadUnloadDevice = new LoadUnloadDevice();
 	TransportationLoop rqTransportationLoop = new TransportationLoop();
@@ -34,12 +34,14 @@ public class SMLabTesting extends AOSimulationModel {
 						// created in constructor
 	protected DVPs dvp = new DVPs(this); // Reference to dvp object
 	protected UDPs udp = new UDPs(this);
-
+	protected Testing testing = new Testing();
 	// Output object
 	protected Output output = new Output(this);
 
 	// Output values - define the public methods that return values
 	// required for experimentation.
+
+	// For validation log display use
 	public int getTotalSample() {
 		return output.getTotalSample();
 	}
@@ -47,14 +49,21 @@ public class SMLabTesting extends AOSimulationModel {
 	public int getOvertimedSample() {
 		return output.getOvertimedSample();
 	}
+    public int getNumPassedSample() {
+        return output.getNumPassedSample();
+    }
 
 	public double getTurnaroundUnsatisfiedLevel() {
 		return output.getTurnaroundUnsatisfiedLevel();
 	}
 
+	public double[] getOccupyingRateOfBuffer() {
+		return output.getOccupyingRateOfBuffer();
+	}
+
 	// Constructor
 	public SMLabTesting(double t0time, double tftime, int[] numTesters, int numSampleHolders,
-			Boolean logicConfiguration, Seeds sd, boolean log) {
+			LoadUnloadDevice.logicType logicConfiguration, Seeds sd, boolean log) {
 		// Initialise parameters here
 		this.numTesters = numTesters;
 		this.numSampleHolders = numSampleHolders;
@@ -72,6 +81,7 @@ public class SMLabTesting extends AOSimulationModel {
 		Testing.model = this;
 		LogPrinter.model = this;
 		LoadUnload.model = this;
+		SampleArrival.initRvps(sd);
 
 		// Create RVP object with given seed
 		rvp = new RVPs(sd);
@@ -83,7 +93,7 @@ public class SMLabTesting extends AOSimulationModel {
 		Initialise init = new Initialise(this);
 		scheduleAction(init); // Should always be first one scheduled.
 		// Schedule other scheduled actions and acitvities here
-		SampleArrival aSampleArr = new SampleArrival(this);
+		SampleArrival aSampleArr = new SampleArrival();
 		scheduleAction(aSampleArr); // Start SampleArrival
 		Move seqAct = new Move();
 		seqAct.startingEvent();
@@ -115,12 +125,7 @@ public class SMLabTesting extends AOSimulationModel {
 	private boolean scanPreconditions() {
 		boolean statusChanged = false;
 		// Conditional Actions
-		if (RepairClean.precondition() == true) {
-			RepairClean act = new RepairClean();
-			act.startingEvent();
-			scheduleActivity(act);
-			statusChanged = true;
-		}
+
 		// System.out.printf("================================after RepairClean
 		// sbl begin statusChanged=%s =",
 		// statusChanged + "\n");
@@ -141,6 +146,12 @@ public class SMLabTesting extends AOSimulationModel {
 			scheduleActivity(act);
 			statusChanged = true;
 		}
+        if (RepairClean.precondition() == true) {
+            RepairClean act = new RepairClean();
+            act.startingEvent();
+            scheduleActivity(act);
+            statusChanged = true;
+        }
 		// System.out.printf("================================after Testing sbl
 		// begin statusChanged=%s =",
 		// statusChanged + "\n");

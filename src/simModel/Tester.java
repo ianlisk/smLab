@@ -7,5 +7,5 @@ class Tester {
 
 	protected Status status;
 	protected double timeToFail;
-	protected int numOps;
+	protected int numTests;
 }
