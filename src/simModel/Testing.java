@@ -4,7 +4,7 @@ import simulationModelling.Activity;
 
 class Testing extends Activity {
 
-	protected final static int[] NONE = {};
+	protected final static int[] NONE = null;
 
 	static SMLabTesting model;
 
@@ -13,15 +13,17 @@ class Testing extends Activity {
 	private double procTime;
 
 	public static boolean precondition() {
-		return cellToStartTest() != NONE;
+		return udpCellToStartTest() != NONE;
 	}
 
 	@Override
 	public void startingEvent() {
-		ids = cellToStartTest();
-		model.rcTester[ids[0]][ids[1]].status = Tester.Status.BUSY;
-		shid = model.qInputBuffer[ids[0]].remove();
-		procTime = uTestTime(ids[0]);
+		ids = udpCellToStartTest();
+		int cid = ids[0];
+		int tid = ids[1];
+		model.rcTester[cid][tid].status = Tester.Status.BUSY;
+		shid = model.qInputBuffer[cid].spRemoveQue();
+		procTime = uTestTime(cid);
 	}
 
 	@Override
@@ -31,25 +33,26 @@ class Testing extends Activity {
 
 	@Override
 	public void terminatingEvent() {
-		model.qOutputBuffer[ids[0]].insert(shid);
+		model.qOutputBuffer[ids[0]].spInsertQue(shid);
 		model.rcTester[ids[0]][ids[1]].status = Tester.Status.IDLE;
 
 		if (ids[0] == Constants.C2) {
-			model.rcTester[Constants.C2][ids[1]].numTests += 1;
+			model.rcTester[Constants.C2][ids[1]].numOps += 1;
 
 		} else {
 			model.rcTester[ids[0]][ids[1]].timeToFail -= procTime;
 
 		}
-//		System.out.println("----------------------Testing shid = " + shid + "; sample="
-//				+ model.rSampleHolder[shid].sample.toString());
-		model.rSampleHolder[shid].sample.step += 1;
+		// System.out.println("----------------------Testing shid = " + shid +
+		// "; sample="
+		// + model.rSampleHolder[shid].sample.toString());
+		model.rcSampleHolder[shid].sample.step += 1;
 	}
 
 	/*
 	 * UDPs
 	 */
-	protected static int[] cellToStartTest() {
+	protected static int[] udpCellToStartTest() {
 		for (int cid : Constants.DEFAULT_CID_ARRAY) {
 			// System.out.println("********************************Testing
 			// cellToStartTest qInputBuffer[" + cid
@@ -57,6 +60,8 @@ class Testing extends Activity {
 			if (model.qInputBuffer[cid].list.size() > 0) {
 				for (int tid = 0; tid < model.numTesters[cid]; tid++) {
 					Tester tester = model.rcTester[cid][tid];
+					// if (tester.status == Tester.Status.IDLE &&
+					// model.rvp.uTimeToFailure(cid) > uTestTime(cid)) {
 					if (tester.status == Tester.Status.IDLE) {
 						return new int[] { cid, tid };
 					}
@@ -69,7 +74,7 @@ class Testing extends Activity {
 	/*
 	 * DVPs
 	 */
-	protected double uTestTime(int cid) {
+	protected static double uTestTime(int cid) {
 		switch (cid) {
 		case Constants.C1:
 			return 0.77;

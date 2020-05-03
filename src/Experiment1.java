@@ -1,11 +1,16 @@
 
+// File: Experiment.java
+// Description:
+
 import cern.jet.random.engine.RandomSeedGenerator;
 import simModel.Constants;
 import simModel.LoadUnloadDevice;
 import simModel.SMLabTesting;
 import simModel.Seeds;
 
-class Validation {
+// Main Method: Experiments
+// 
+class Experiment1 {
 	public static void main(String[] args) {
 		long startRealTime = System.currentTimeMillis();
 		double startTime = 0.0;
@@ -16,16 +21,17 @@ class Validation {
 		RandomSeedGenerator rsg = new RandomSeedGenerator();
 		sds = new Seeds(rsg);
 
-		System.out.println("Validation\n");
-		// Validation for 1 hours
-		model = new SMLabTesting(startTime, startTime + 1440, new int[] { 5, 5, 5, 5, 5 },
-				Constants.INIT_NUM_SAMPLE_HOLDERS, LoadUnloadDevice.logicType.CURRENT_LOGIC, sds, true);
+		System.out.println("Experiment\n");
+		// run for 60 days, calculate for the end 30 days after the warm-up
+		// period
+		model = new SMLabTesting(startTime, startTime + 1440 * 60, new int[] { 2, 2, 2, 2, 3 },
+				Constants.INIT_NUM_SAMPLE_HOLDERS, LoadUnloadDevice.logicType.NEW_LOGIC, sds, false);
 
 		model.runSimulation();
 
 		printOutput(model);
 		long endTime = System.currentTimeMillis();
-		System.out.println("代码运行时间：" + (endTime - startRealTime) + "ms");
+		System.out.println("Total running time：" + (endTime - startRealTime) + "ms");
 	}
 
 	private static void printOutput(SMLabTesting model) {

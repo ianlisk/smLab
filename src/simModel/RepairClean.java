@@ -1,5 +1,8 @@
 package simModel;
 
+import cern.jet.random.Exponential;
+import cern.jet.random.engine.MersenneTwister;
+import dataModelling.TriangularVariate;
 import simulationModelling.Activity;
 
 class RepairClean extends Activity {
@@ -18,16 +21,15 @@ class RepairClean extends Activity {
 		int tid = ids[1];
 		model.rcTester[cid][tid].status = Tester.Status.DOWN;
 		if (cid == Constants.C2)
-			model.rcTester[cid][tid].numTests = 0;
+			model.rcTester[cid][tid].numOps = 0;
 	}
 
 	@Override
 	public double duration() {
 		int cid = ids[0];
-		int tid = ids[1];
 		// return model.rvp.uRepairTime(cid) +
 		// model.rcTester[cid][tid].timeToFail;
-		return model.rvp.uRepairCleanTime(cid);
+		return uRepairCleanTime(cid);
 	}
 
 	@Override
@@ -45,7 +47,7 @@ class RepairClean extends Activity {
 			Tester[] testers = model.rcTester[cid];
 			if (cid == Constants.C2) {
 				for (int tid = 0; tid < testers.length; tid++) {
-					if (testers[tid].numTests == Constants.TESTS_BEFORE_CLEAN) {
+					if (testers[tid].numOps == Constants.TESTS_BEFORE_CLEAN) {
 						return new int[] { cid, tid };
 					}
 				}
@@ -59,6 +61,45 @@ class RepairClean extends Activity {
 			}
 		}
 		return NONE;
+	}
+
+	/* RVPs */
+	protected static double[] REPAIR_TIME_MEAN_ARR = new double[] { 11, -1, 7, 14, 13 };
+	private static Exponential repairTimeDist;
+	private static TriangularVariate cleanTimeDist;
+
+	protected static void initRvps(Seeds sd) {
+		cleanTimeDist = new TriangularVariate(5.0, 6.0, 10.0, new MersenneTwister(sd.cleanTimeSeed));
+		repairTimeDist = new Exponential(1.0 / REPAIR_TIME_MEAN_ARR[0], new MersenneTwister(sd.repairTime));
+	}
+
+	protected double uRepairTime(int cid) {
+		double mean = REPAIR_TIME_MEAN_ARR[0];
+		switch (cid) {
+		case Constants.C1:
+			mean = REPAIR_TIME_MEAN_ARR[0];
+		case Constants.C2:
+			mean = REPAIR_TIME_MEAN_ARR[1];
+		case Constants.C3:
+			mean = REPAIR_TIME_MEAN_ARR[2];
+		case Constants.C4:
+			mean = REPAIR_TIME_MEAN_ARR[3];
+		case Constants.C5:
+			mean = REPAIR_TIME_MEAN_ARR[4];
+		}
+		return repairTimeDist.nextDouble(1 / mean);
+	}
+
+	protected double duCleanTime() {
+		return cleanTimeDist.next();
+	}
+
+	protected double uRepairCleanTime(int cid) {
+		if (cid == Constants.C2) {
+			return duCleanTime();
+		} else {
+			return model.rvp.uTimeToFailure(cid) + uRepairTime(cid);
+		}
 	}
 
 }

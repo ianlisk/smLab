@@ -10,7 +10,7 @@ import simModel.Seeds;
 
 // Main Method: Experiments
 // 
-class Experiment {
+class Experiment3 {
 	public static void main(String[] args) {
 		long startRealTime = System.currentTimeMillis();
 		double startTime = 0.0;
@@ -21,23 +21,29 @@ class Experiment {
 		RandomSeedGenerator rsg = new RandomSeedGenerator();
 		sds = new Seeds(rsg);
 
-		System.out.println("Validation\n");
-		// run for 30 days
-		model = new SMLabTesting(startTime, (startTime + 1440) * 30, new int[] { 20, 20, 20, 20, 20 },
-				Constants.INIT_NUM_SAMPLE_HOLDERS, LoadUnloadDevice.logicType.CURRENT_LOGIC, sds, false);
+		System.out.println("Experiment\n");
+		double[] unSatisfArr = new double[Constants.NUM_RUNS];
+		double[][] rateMatrix = new double[Constants.NUM_RUNS][Constants.EXTENDED_CID_ARRAY.length];
+		for (int i = 0; i < Constants.NUM_RUNS; i++) {
+			// run for 60 days, calculate for the end 30 days after the warm-up
+			// period
+			model = new SMLabTesting(startTime, startTime + 1440 * 60, new int[] { 10, 10, 10, 10, 10 },
+					Constants.INIT_NUM_SAMPLE_HOLDERS, LoadUnloadDevice.logicType.NEW_LOGIC, sds, false);
+			model.runSimulation();
+			unSatisfArr[i] = model.getTurnaroundUnsatisfiedLevel() * 100.0;
+			rateMatrix[i] = model.getOccupyingRateOfBuffer();
+		}
 
-		model.runSimulation();
-
-		printOutput(model);
+		// printOutputBatch(model);
 		long endTime = System.currentTimeMillis();
-		System.out.println("代码运行时间：" + (endTime - startRealTime) + "ms");
+		System.out.println("Total running time：" + (endTime - startRealTime) + "ms");
 	}
 
-	private static void printOutput(SMLabTesting model) {
+	private static void printOutputBatch(SMLabTesting model) {
 		System.out.println("SampleHolders: " + model.numSampleHolders);
 		System.out.printf("numTesters: %d %d %d %d %d\n", model.numTesters[0], model.numTesters[1], model.numTesters[2],
 				model.numTesters[3], model.numTesters[4]);
-		System.out.println("logicConfiguration: " + model.logicConfiguration);
+		System.out.println("logicConfiguration: " + model.rLoadUnloadDeviceLogicConfiguration);
 		System.out.printf("  totalSample: %d\n", model.getTotalSample());
 		System.out.printf("  overtimedSample: %d\n", model.getOvertimedSample());
 		System.out.printf("  passedSample: %d\n", model.getNumPassedSample());

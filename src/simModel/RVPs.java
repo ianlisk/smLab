@@ -1,9 +1,7 @@
 package simModel;
 
 import cern.jet.random.Exponential;
-import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
-import dataModelling.TriangularVariate;
 
 class RVPs {
 	static SMLabTesting model; // for accessing the clock
@@ -22,24 +20,30 @@ class RVPs {
 	// 0.447761194, 0.504201681, 0.517241379 };
 
 	protected double[] FAILURE_MEAN_ARR = new double[] { 14, -1, 9, 15, 16 };
-	protected double[] REPAIR_TIME_MEAN_ARR = new double[] { 11, -1, 7, 14, 13 };
+	// protected double[] REPAIR_TIME_MEAN_ARR = new double[] { 11, -1, 7, 14,
+	// 13 };
 
 	// private Exponential sampleArrDist;
 	private Exponential timeToFailureDist;
-	private Uniform rushSampleDist;
-	private Exponential repairTimeDist;
+	// private Uniform rushSampleDist;
+	// private Exponential repairTimeDist;
 
 	// Constructor
 	protected RVPs(Seeds sd) {
 		// sampleArrDist = new Exponential(ARRIVAL_MEAN_ARR[0], new
 		// MersenneTwister(sd.arr));
-		rushSampleDist = new Uniform(0.0, 1.0, new MersenneTwister(sd.rushSampleSeed));
-		sequenceTypeDist = new Uniform(0.0, 100.0, new MersenneTwister(sd.sequenceSeed));
+		// rushSampleDist = new Uniform(0.0, 1.0, new
+		// MersenneTwister(sd.rushSampleSeed));
+		// sequenceTypeDist = new Uniform(0.0, 100.0, new
+		// MersenneTwister(sd.sequenceSeed));
 		timeToFailureDist = new Exponential((1.0 / (FAILURE_MEAN_ARR[0] * 60)),
 				new MersenneTwister(sd.timeToFailureSeeds));
-		cleanTimeDist = new TriangularVariate(5.0, 6.0, 10.0, new MersenneTwister(sd.cleanTimeSeed));
-		repairTimeDist = new Exponential(1.0 / REPAIR_TIME_MEAN_ARR[0], new MersenneTwister(sd.repairTime));
-		loadUnloadTimeDist = new TriangularVariate(0.18, 0.23, 0.45, new MersenneTwister(sd.loadUnloadTime));
+		// cleanTimeDist = new TriangularVariate(5.0, 6.0, 10.0, new
+		// MersenneTwister(sd.cleanTimeSeed));
+		// repairTimeDist = new Exponential(1.0 / REPAIR_TIME_MEAN_ARR[0], new
+		// MersenneTwister(sd.repairTime));
+		// loadUnloadTimeDist = new TriangularVariate(0.18, 0.23, 0.45, new
+		// MersenneTwister(sd.loadUnloadTime));
 	}
 
 	// protected double duSampleArr() {
@@ -71,82 +75,91 @@ class RVPs {
 		return timeToFailureDist.nextDouble(1.0 / (mean * 60));
 	}
 
-	private double uRepairTime(int cid) {
-		double mean = REPAIR_TIME_MEAN_ARR[0];
-		switch (cid) {
-		case Constants.C1:
-			mean = REPAIR_TIME_MEAN_ARR[0];
-		case Constants.C2:
-			mean = REPAIR_TIME_MEAN_ARR[1];
-		case Constants.C3:
-			mean = REPAIR_TIME_MEAN_ARR[2];
-		case Constants.C4:
-			mean = REPAIR_TIME_MEAN_ARR[3];
-		case Constants.C5:
-			mean = REPAIR_TIME_MEAN_ARR[4];
-		}
-		double ret = repairTimeDist.nextDouble(1.0 / mean);
-		// System.out.println("$$$$$$$$$$$$$$$$$$$$$$$cell:" + cid + ",
-		// uRepairTime = " + ret);
-		return ret;
-	}
+	// private double uRepairTime(int cid) {
+	// double mean = REPAIR_TIME_MEAN_ARR[0];
+	// switch (cid) {
+	// case Constants.C1:
+	// mean = REPAIR_TIME_MEAN_ARR[0];
+	// case Constants.C2:
+	// mean = REPAIR_TIME_MEAN_ARR[1];
+	// case Constants.C3:
+	// mean = REPAIR_TIME_MEAN_ARR[2];
+	// case Constants.C4:
+	// mean = REPAIR_TIME_MEAN_ARR[3];
+	// case Constants.C5:
+	// mean = REPAIR_TIME_MEAN_ARR[4];
+	// }
+	// double ret = repairTimeDist.nextDouble(1.0 / mean);
+	// // System.out.println("$$$$$$$$$$$$$$$$$$$$$$$cell:" + cid + ",
+	// // uRepairTime = " + ret);
+	// return ret;
+	// }
 
-	protected double uRepairCleanTime(int cid) {
-		if (cid == Constants.C2) {
-			return duCleanTime();
-		} else {
-			// return uTimeToFailure(cid) + uRepairTime(cid);
-			return uRepairTime(cid);
-		}
-	}
+	// protected double uRepairCleanTime(int cid) {
+	// if (cid == Constants.C2) {
+	// return duCleanTime();
+	// } else {
+	// // return uTimeToFailure(cid) + uRepairTime(cid);
+	// return uRepairTime(cid);
+	// }
+	// }
 
-	protected boolean duRush() {
-		return rushSampleDist.nextDouble() < 0.07;
-	}
+	// protected boolean duRush() {
+	// return rushSampleDist.nextDouble() < 0.07;
+	// }
+	//
+	// private Uniform sequenceTypeDist;
 
-	private Uniform sequenceTypeDist;
+	// protected int[] uGetSequence() {
+	// double value = sequenceTypeDist.nextDouble();
+	// int[] sequence;
+	//
+	// if (value < 9) {
+	// sequence = new int[] { Constants.C1, Constants.C2, Constants.C4,
+	// Constants.C5, Constants.LU };
+	// } else if (value < 22) {
+	// sequence = new int[] { Constants.C3, Constants.C4, Constants.C5,
+	// Constants.LU };
+	// } else if (value < 37) {
+	// sequence = new int[] { Constants.C1, Constants.C2, Constants.C3,
+	// Constants.C4, Constants.LU };
+	// } else if (value < 49) {
+	// sequence = new int[] { Constants.C4, Constants.C3, Constants.C2,
+	// Constants.LU };
+	// } else if (value < 56) {
+	// sequence = new int[] { Constants.C2, Constants.C5, Constants.C1,
+	// Constants.LU };
+	// } else if (value < 67) {
+	// sequence = new int[] { Constants.C4, Constants.C5, Constants.C2,
+	// Constants.C3, Constants.LU };
+	// } else if (value < 81) {
+	// sequence = new int[] { Constants.C1, Constants.C5, Constants.C3,
+	// Constants.C4, Constants.LU };
+	// } else if (value < 87) {
+	// sequence = new int[] { Constants.C5, Constants.C3, Constants.C1,
+	// Constants.LU };
+	// } else {
+	// sequence = new int[] { Constants.C2, Constants.C4, Constants.C5,
+	// Constants.LU };
+	// }
+	// return sequence;
+	// }
 
-	protected int[] uGetSequence() {
-		double value = sequenceTypeDist.nextDouble();
-		int[] sequence;
+	// private TriangularVariate cleanTimeDist;
 
-		if (value < 9) {
-			sequence = new int[] { Constants.C1, Constants.C2, Constants.C4, Constants.C5, Constants.LU };
-		} else if (value < 22) {
-			sequence = new int[] { Constants.C3, Constants.C4, Constants.C5, Constants.LU };
-		} else if (value < 37) {
-			sequence = new int[] { Constants.C1, Constants.C2, Constants.C3, Constants.C4, Constants.LU };
-		} else if (value < 49) {
-			sequence = new int[] { Constants.C4, Constants.C3, Constants.C2, Constants.LU };
-		} else if (value < 56) {
-			sequence = new int[] { Constants.C2, Constants.C5, Constants.C1, Constants.LU };
-		} else if (value < 67) {
-			sequence = new int[] { Constants.C4, Constants.C5, Constants.C2, Constants.C3, Constants.LU };
-		} else if (value < 81) {
-			sequence = new int[] { Constants.C1, Constants.C5, Constants.C3, Constants.C4, Constants.LU };
-		} else if (value < 87) {
-			sequence = new int[] { Constants.C5, Constants.C3, Constants.C1, Constants.LU };
-		} else {
-			sequence = new int[] { Constants.C2, Constants.C4, Constants.C5, Constants.LU };
-		}
-		return sequence;
-	}
+	// protected double duCleanTime() {
+	// double ret = cleanTimeDist.next();
+	// // System.out.println("$$$$$$$$$$$$$$$$$$$$$$$:uCleanTime = " + ret);
+	// return ret;
+	// }
 
-	private TriangularVariate cleanTimeDist;
+	// private TriangularVariate loadUnloadTimeDist;
 
-	protected double duCleanTime() {
-		double ret = cleanTimeDist.next();
-		// System.out.println("$$$$$$$$$$$$$$$$$$$$$$$:uCleanTime = " + ret);
-		return ret;
-	}
-
-	private TriangularVariate loadUnloadTimeDist;
-
-	protected double duloadUnloadTime() {
-		double ret = loadUnloadTimeDist.next();
-		// System.out.println("$$$$$$$$$$$$$$$$$$$$$$$:duloadUnloadTime = " +
-		// ret);
-		return ret;
-	}
+	// protected double duloadUnloadTime() {
+	// double ret = loadUnloadTimeDist.next();
+	// // System.out.println("$$$$$$$$$$$$$$$$$$$$$$$:duloadUnloadTime = " +
+	// // ret);
+	// return ret;
+	// }
 
 }

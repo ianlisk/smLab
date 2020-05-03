@@ -22,7 +22,8 @@ class Move extends SequelActivity {
 	protected void terminatingEvent() {
 		model.output.numMoves++;
 		model.output.countOccupyingOfBuffer();
-		// 每次步进，基准位置自增1.（传送带数组不变）
+		// Each step, the reference position increases by 1. (Conveyor array
+		// remains unchanged)
 		model.rqTransportationLoop.loadAreaPosition = (model.rqTransportationLoop.loadAreaPosition + 1) % LOOP_SIZE;
 		udpMoveToFromLoop();
 		Move seqAct = new Move();
@@ -32,18 +33,20 @@ class Move extends SequelActivity {
 
 	/* UDPs */
 	protected void udpMoveToFromLoop() {
-		int LU_in = model.rqTransportationLoop.loadAreaPosition;// 基准位置：LU_inputbuffer在传送带上的位置
-		int LU_out = (LU_in + Constants.BUFFER_SIZE) % LOOP_SIZE;
+		// Reference position: the position of LU_inputbuffer on the loop
+		int LU_in = model.rqTransportationLoop.loadAreaPosition;
+		int LU_out = (LU_in + 3) % LOOP_SIZE;
 		// System.out.printf("LU_in=%d , LU_out= %d \n", LU_in, LU_out);
-		for (int cid : Constants.EXTENDED_CID_ARRAY) {// 遍历每个cell
+		for (int cid : Constants.EXTENDED_CID_ARRAY) {// Traverse each cell
 			// System.out.println("********************************udpMoveToFromLoop
 			// 处理前的 qInputBuffer[" + cid
 			// + "].list = " + model.qInputBuffer[cid].list);
 			int offset = (cid + 1) % Constants.EXTENDED_CID_ARRAY.length;
 			int cid_in = (LU_in + offset * Constants.CELL_DISTANCE) % LOOP_SIZE;
 			int cid_ou = (LU_out + offset * Constants.CELL_DISTANCE) % LOOP_SIZE;
-			int shid_in = model.rqTransportationLoop.position[cid_in];// 传送带cid_in位置上的值，即之前初始化时存的shId
-																		// TODO
+			// The value at the position of the cid_in of the conveyor belt,
+			// that is, the shId stored during the previous initialization
+			int shid_in = model.rqTransportationLoop.position[cid_in];
 			// System.out.println(
 			// "********************************udpMoveToFromLoop
 			// model.rqTransportationLoop.position传送带数组 = "
@@ -53,30 +56,30 @@ class Move extends SequelActivity {
 			// If the position(cid_in) has a sample holder
 			if (shid_in >= Constants.EMPTY_SAMPLE_HOLDER) {
 				if (cid == Constants.LU) {
-					boolean new_LU_logic = model.logicConfiguration == LoadUnloadDevice.logicType.NEW_LOGIC;
+					boolean new_LU_logic = model.rLoadUnloadDeviceLogicConfiguration == LoadUnloadDevice.logicType.NEW_LOGIC;
 					boolean hasSpace = model.qInputBuffer[cid].isAvailable();
-					boolean isSampleHolderEmpty = null == model.rSampleHolder[shid_in].sample;
-					int sampleStep = isSampleHolderEmpty ? 0 : model.rSampleHolder[shid_in].sample.step;
+					boolean isSampleHolderEmpty = null == model.rcSampleHolder[shid_in].sample;
+					int sampleStep = isSampleHolderEmpty ? 0 : model.rcSampleHolder[shid_in].sample.step;
 					boolean isTestFinish = !isSampleHolderEmpty
-							&& model.rSampleHolder[shid_in].sample.sequence[sampleStep] == Constants.LU;
+							&& model.rcSampleHolder[shid_in].sample.uSequence[sampleStep] == Constants.LU;
 
 					if (new_LU_logic) {
 						if ((isTestFinish && hasSpace) || (isSampleHolderEmpty && model.qInputBuffer[cid].list
 								.size() < Constants.LU_BUFFER_SUGGESTED_WAITING_NUMBER)) {
-							model.qInputBuffer[cid].insert(shid_in);
+							model.qInputBuffer[cid].spInsertQue(shid_in);
 							model.rqTransportationLoop.position[cid_in] = Constants.EMPTY_SAMPLE_HOLDER - 1;
 						}
 					} else {
 						if (hasSpace) {
-							model.qInputBuffer[cid].insert(shid_in);
+							model.qInputBuffer[cid].spInsertQue(shid_in);
 							model.rqTransportationLoop.position[cid_in] = Constants.EMPTY_SAMPLE_HOLDER - 1;
 						}
 					}
 				} else {
-					Sample icSample = model.rSampleHolder[shid_in].sample;
-					if (icSample != null && icSample.sequence[icSample.step] == cid
+					Sample icSample = model.rcSampleHolder[shid_in].sample;
+					if (icSample != null && icSample.uSequence[icSample.step] == cid
 							&& model.qInputBuffer[cid].isAvailable()) {
-						model.qInputBuffer[cid].insert(shid_in);
+						model.qInputBuffer[cid].spInsertQue(shid_in);
 						model.rqTransportationLoop.position[cid_in] = Constants.EMPTY_SAMPLE_HOLDER - 1;
 					}
 				}
@@ -85,7 +88,7 @@ class Move extends SequelActivity {
 			// position is empty
 			if (model.qOutputBuffer[cid].list.size() > 0
 					&& model.rqTransportationLoop.position[cid_ou] == Constants.EMPTY_SAMPLE_HOLDER - 1) {
-				int sid_ou = model.qOutputBuffer[cid].remove();
+				int sid_ou = model.qOutputBuffer[cid].spRemoveQue();
 				model.rqTransportationLoop.position[cid_ou] = sid_ou;
 			}
 		}

@@ -13,9 +13,9 @@ class Output {
 		numRushSamplePass = 0;
 		numRegularSamplePass = 0;
 		numMoves = 0;
-		countOccupyingOfBufferMap = new HashMap<Integer, Integer>();
+		occupyingOfBuffer = new HashMap<Integer, Integer>();
 		for (int cid : Constants.EXTENDED_CID_ARRAY) {
-			countOccupyingOfBufferMap.put(cid, 0);
+			occupyingOfBuffer.put(cid, 0);
 		}
 	}
 	// Use OutputSequence class to define Trajectory and Sample Sequences
@@ -37,7 +37,7 @@ class Output {
 	protected int numRushSamplePass;
 	protected int numRegularSamplePass;
 	protected double numMoves;
-	protected Map<Integer, Integer> countOccupyingOfBufferMap;
+	protected Map<Integer, Integer> occupyingOfBuffer;
 
 	// For validation log display use
 	public int getTotalSample() {
@@ -63,17 +63,21 @@ class Output {
 
 	//
 	protected void sampleTested(Sample sample) {
-		double timeTested = model.getClock() - sample.time;
-		int step = null == sample ? 0 : sample.step;
-		if (sample.rush == false) {
-			this.numRegularSample++;
-			if (timeTested < 60.0 && sample.sequence[step] == Constants.LU)
-				this.numRegularSamplePass++;
-		} else {
-			this.numRushSample++;
-			if (timeTested < 30.0 && sample.sequence[step] == Constants.LU)
-				this.numRushSamplePass++;
+		// only calculate after steady state
+		if (model.getClock() > Constants.STEADY_TIME_THRESHOLD) {
+			double timeTested = model.getClock() - sample.arrivalTime;
+			int step = null == sample ? 0 : sample.step;
+			if (sample.uRush == false) {
+				this.numRegularSample++;
+				if (timeTested < 60.0 && sample.uSequence[step] == Constants.LU)
+					this.numRegularSamplePass++;
+			} else {
+				this.numRushSample++;
+				if (timeTested < 30.0 && sample.uSequence[step] == Constants.LU)
+					this.numRushSamplePass++;
+			}
 		}
+
 		// System.out.printf(
 		// "numRegularSample= %d,numRushSample=
 		// %d,numRegularSamplePass=%d,numRushSamplePass= %d, timeTested = %f
@@ -94,15 +98,15 @@ class Output {
 			else
 				fullFlag = Constants.BUFFER_SIZE == iBuffer.list.size() ? 1 : 0;
 
-			int count = countOccupyingOfBufferMap.get(cid) + fullFlag;
-			countOccupyingOfBufferMap.put(cid, count);
+			int count = occupyingOfBuffer.get(cid) + fullFlag;
+			occupyingOfBuffer.put(cid, count);
 		}
 	}
 
 	protected double[] getOccupyingRateOfBuffer() {
 		double[] occupyingRateOfBufferArr = new double[Constants.EXTENDED_CID_ARRAY.length];
 		for (int cid : Constants.EXTENDED_CID_ARRAY) {
-			occupyingRateOfBufferArr[cid] = (Double.parseDouble(countOccupyingOfBufferMap.get(cid) + "") / numMoves);
+			occupyingRateOfBufferArr[cid] = (Double.parseDouble(occupyingOfBuffer.get(cid) + "") / numMoves);
 			// System.out.printf("@@@@@@@@@@@@@@@@@@@ cid=%d,
 			// countOfOccupying=%d, numMoves=%f, rate=%f \n", cid,
 			// countOccupyingOfBufferMap.get(cid), numMoves,

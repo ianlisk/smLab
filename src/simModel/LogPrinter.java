@@ -32,7 +32,7 @@ public class LogPrinter {
 			System.out.printf("C%d  ", cid + 1);
 			for (Tester tester : model.rcTester[cid]) {
 				if (cid == Constants.C2) {
-					System.out.printf("%-10d", Constants.TESTS_BEFORE_CLEAN - tester.numTests);
+					System.out.printf("%-10d", Constants.TESTS_BEFORE_CLEAN - tester.numOps);
 				} else {
 					System.out.printf("%-10.2f", tester.timeToFail);
 				}

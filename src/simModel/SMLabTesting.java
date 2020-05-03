@@ -10,7 +10,7 @@ public class SMLabTesting extends AOSimulationModel {
 	// Define the parameters
 	public int[] numTesters = new int[5];
 	public int numSampleHolders;
-	public LoadUnloadDevice.logicType logicConfiguration;
+	public LoadUnloadDevice.logicType rLoadUnloadDeviceLogicConfiguration;
 
 	/*-------------Entity Data Structures-------------------*/
 	/* Group and Queue Entities */
@@ -21,7 +21,7 @@ public class SMLabTesting extends AOSimulationModel {
 	protected InputBuffer[] qInputBuffer = new InputBuffer[6];
 	OutputBuffer[] qOutputBuffer = new OutputBuffer[6];
 	Tester[][] rcTester = new Tester[Constants.NUM_TESTERS_IN_CELL][];
-	SampleHolder[] rSampleHolder;
+	SampleHolder[] rcSampleHolder;
 	LoadUnloadDevice rLoadUnloadDevice = new LoadUnloadDevice();
 	TransportationLoop rqTransportationLoop = new TransportationLoop();
 	NewSampleBuffer qNewSampleBuffer = new NewSampleBuffer();
@@ -32,8 +32,8 @@ public class SMLabTesting extends AOSimulationModel {
 	// References to RVP and DVP objects
 	protected RVPs rvp; // Reference to rvp object - object
 						// created in constructor
-	protected DVPs dvp = new DVPs(this); // Reference to dvp object
-	protected UDPs udp = new UDPs(this);
+	// protected DVPs dvp = new DVPs(this); // Reference to dvp object
+	// protected UDPs udp = new UDPs(this);
 	protected Testing testing = new Testing();
 	// Output object
 	protected Output output = new Output(this);
@@ -49,9 +49,10 @@ public class SMLabTesting extends AOSimulationModel {
 	public int getOvertimedSample() {
 		return output.getOvertimedSample();
 	}
-    public int getNumPassedSample() {
-        return output.getNumPassedSample();
-    }
+
+	public int getNumPassedSample() {
+		return output.getNumPassedSample();
+	}
 
 	public double getTurnaroundUnsatisfiedLevel() {
 		return output.getTurnaroundUnsatisfiedLevel();
@@ -67,25 +68,10 @@ public class SMLabTesting extends AOSimulationModel {
 		// Initialise parameters here
 		this.numTesters = numTesters;
 		this.numSampleHolders = numSampleHolders;
-		this.logicConfiguration = logicConfiguration;
+		this.rLoadUnloadDeviceLogicConfiguration = logicConfiguration;
 		// For turning on logging
 		logFlag = log;
-
-		DVPs.model = this;
-		Initialise.model = this;
-		RepairClean.model = this;
-		Move.model = this;
-		Output.model = this;
-		RVPs.model = this;
-		SampleArrival.model = this;
-		Testing.model = this;
-		LogPrinter.model = this;
-		LoadUnload.model = this;
-		SampleArrival.initRvps(sd);
-
-		// Create RVP object with given seed
-		rvp = new RVPs(sd);
-
+		initialiseClasses(sd);
 		// Initialise the simulation model
 		initAOSimulModel(t0time, tftime);
 
@@ -100,11 +86,22 @@ public class SMLabTesting extends AOSimulationModel {
 		scheduleActivity(seqAct);// Start Move
 	}
 
-	/**
-	 * 
-	 */
-	public SMLabTesting() {
-		// TODO Auto-generated constructor stub
+	private void initialiseClasses(Seeds sd) {
+		DVPs.model = this;
+		Initialise.model = this;
+		RepairClean.model = this;
+		Move.model = this;
+		Output.model = this;
+		RVPs.model = this;
+		SampleArrival.model = this;
+		Testing.model = this;
+		LogPrinter.model = this;
+		LoadUnload.model = this;
+		SampleArrival.initRvps(sd);
+		LoadUnload.initRvps(sd);
+		RepairClean.initRvps(sd);
+		// Create RVP object with given seed
+		rvp = new RVPs(sd);
 	}
 
 	/************ Implementation of Data Modules ***********/
@@ -115,9 +112,7 @@ public class SMLabTesting extends AOSimulationModel {
 		reschedule(behObj);
 		// Check preconditions of Conditional Activities
 		while (scanPreconditions() == true)
-			/* repeat */;
-
-		// Check preconditions of Interruptions in Extended Activities
+			;
 	}
 
 	// Single scan of all preconditions
@@ -125,37 +120,24 @@ public class SMLabTesting extends AOSimulationModel {
 	private boolean scanPreconditions() {
 		boolean statusChanged = false;
 		// Conditional Actions
-
-		// System.out.printf("================================after RepairClean
-		// sbl begin statusChanged=%s =",
-		// statusChanged + "\n");
-		// showSBL();
 		if (LoadUnload.precondition() == true) {
 			LoadUnload act = new LoadUnload();
 			act.startingEvent();
 			scheduleActivity(act);
 			statusChanged = true;
 		}
-		// System.out.printf("================================afterLoadUnload
-		// sbl begin statusChanged=%s =",
-		// statusChanged + "\n");
-		// showSBL();
 		if (Testing.precondition() == true) {
 			Testing act = new Testing();
 			act.startingEvent();
 			scheduleActivity(act);
 			statusChanged = true;
 		}
-        if (RepairClean.precondition() == true) {
-            RepairClean act = new RepairClean();
-            act.startingEvent();
-            scheduleActivity(act);
-            statusChanged = true;
-        }
-		// System.out.printf("================================after Testing sbl
-		// begin statusChanged=%s =",
-		// statusChanged + "\n");
-		// showSBL();
+		if (RepairClean.precondition() == true) {
+			RepairClean act = new RepairClean();
+			act.startingEvent();
+			scheduleActivity(act);
+			statusChanged = true;
+		}
 		return (statusChanged);
 	}
 
