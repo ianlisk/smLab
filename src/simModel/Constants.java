@@ -12,10 +12,11 @@ public class Constants {
 	public static final int LU = 5;
 	public static final int[] DEFAULT_CID_ARRAY = new int[] { C1, C2, C3, C4, C5 };
 	public static final int[] EXTENDED_CID_ARRAY = new int[] { C1, C2, C3, C4, C5, LU };
-	public static final int INIT_NUM_SAMPLE_HOLDERS = 15; // TODO DEFAULT=20
+	public static final int INIT_NUM_SAMPLE_HOLDERS = 17; // begin from 20
 
 	/* Buffer lengths */
-	//The constants below are not defined in CM, but are used in multiple classes
+	// The constants below are not defined in CM, but are used in multiple
+	// classes
 	public static final int LU_INPUT_BUFFER_LENGTH = 5;
 	public static final int LU_BUFFER_SUGGESTED_WAITING_NUMBER = 2;
 	public static final int TESTS_BEFORE_CLEAN = 300;
@@ -30,8 +31,5 @@ public class Constants {
 
 	// 30 hours - from steady state study
 	public static final double STEADY_TIME_THRESHOLD = 60.0 * 30.0;
-
-	// for experiment3
-	public static final int NUM_RUNS = 20;
 
 }

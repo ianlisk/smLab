@@ -36,23 +36,13 @@ class Move extends SequelActivity {
 		// Reference position: the position of LU_inputbuffer on the loop
 		int LU_in = model.rqTransportationLoop.loadAreaPosition;
 		int LU_out = (LU_in + 3) % LOOP_SIZE;
-		// System.out.printf("LU_in=%d , LU_out= %d \n", LU_in, LU_out);
 		for (int cid : Constants.EXTENDED_CID_ARRAY) {// Traverse each cell
-			// System.out.println("********************************udpMoveToFromLoop
-			// 处理前的 qInputBuffer[" + cid
-			// + "].list = " + model.qInputBuffer[cid].list);
 			int offset = (cid + 1) % Constants.EXTENDED_CID_ARRAY.length;
 			int cid_in = (LU_in + offset * Constants.CELL_DISTANCE) % LOOP_SIZE;
 			int cid_ou = (LU_out + offset * Constants.CELL_DISTANCE) % LOOP_SIZE;
-			// The value at the position of the cid_in of the conveyor belt,
+			// The value at the position of the cid_in of the loop,
 			// that is, the shId stored during the previous initialization
 			int shid_in = model.rqTransportationLoop.position[cid_in];
-			// System.out.println(
-			// "********************************udpMoveToFromLoop
-			// model.rqTransportationLoop.position传送带数组 = "
-			// + Arrays.toString(model.rqTransportationLoop.position));
-			// System.out.printf("cid_in=%d , cid_ou= %d , sid_in= %d \n",
-			// cid_in, cid_ou, shid_in);
 			// If the position(cid_in) has a sample holder
 			if (shid_in >= Constants.EMPTY_SAMPLE_HOLDER) {
 				if (cid == Constants.LU) {
@@ -92,12 +82,6 @@ class Move extends SequelActivity {
 				model.rqTransportationLoop.position[cid_ou] = sid_ou;
 			}
 		}
-		// for (int cid : Constants.EXTENDED_CID_ARRAY) {
-		// System.out.println("********************************udpMoveToFromLoop处理后的qInputBuffer["
-		// + cid + "].list = "
-		// + model.qInputBuffer[cid].list);
-		// }
-
 	}
 
 }

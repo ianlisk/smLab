@@ -77,16 +77,8 @@ class Output {
 					this.numRushSamplePass++;
 			}
 		}
-
-		// System.out.printf(
-		// "numRegularSample= %d,numRushSample=
-		// %d,numRegularSamplePass=%d,numRushSamplePass= %d, timeTested = %f
-		// \n",
-		// numRegularSample, numRushSample, numRegularSamplePass,
-		// numRushSamplePass, timeTested);
 	}
 
-	// TODO add cm
 	protected void countOccupyingOfBuffer() {
 		for (int cid : Constants.EXTENDED_CID_ARRAY) {
 			InputBuffer iBuffer = model.qInputBuffer[cid];
@@ -107,10 +99,6 @@ class Output {
 		double[] occupyingRateOfBufferArr = new double[Constants.EXTENDED_CID_ARRAY.length];
 		for (int cid : Constants.EXTENDED_CID_ARRAY) {
 			occupyingRateOfBufferArr[cid] = (Double.parseDouble(occupyingOfBuffer.get(cid) + "") / numMoves);
-			// System.out.printf("@@@@@@@@@@@@@@@@@@@ cid=%d,
-			// countOfOccupying=%d, numMoves=%f, rate=%f \n", cid,
-			// countOccupyingOfBufferMap.get(cid), numMoves,
-			// occupyingRateOfBufferArr[cid]);
 		}
 		return occupyingRateOfBufferArr;
 	}

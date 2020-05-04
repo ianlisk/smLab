@@ -27,8 +27,6 @@ class RepairClean extends Activity {
 	@Override
 	public double duration() {
 		int cid = ids[0];
-		// return model.rvp.uRepairTime(cid) +
-		// model.rcTester[cid][tid].timeToFail;
 		return uRepairCleanTime(cid);
 	}
 
@@ -87,7 +85,7 @@ class RepairClean extends Activity {
 		case Constants.C5:
 			mean = REPAIR_TIME_MEAN_ARR[4];
 		}
-		return repairTimeDist.nextDouble(1 / mean);
+		return repairTimeDist.nextDouble(1.0 / mean);
 	}
 
 	protected double duCleanTime() {
@@ -98,7 +96,7 @@ class RepairClean extends Activity {
 		if (cid == Constants.C2) {
 			return duCleanTime();
 		} else {
-			return model.rvp.uTimeToFailure(cid) + uRepairTime(cid);
+			return uRepairTime(cid);
 		}
 	}
 

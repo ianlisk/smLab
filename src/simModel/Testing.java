@@ -43,9 +43,6 @@ class Testing extends Activity {
 			model.rcTester[ids[0]][ids[1]].timeToFail -= procTime;
 
 		}
-		// System.out.println("----------------------Testing shid = " + shid +
-		// "; sample="
-		// + model.rSampleHolder[shid].sample.toString());
 		model.rcSampleHolder[shid].sample.step += 1;
 	}
 
@@ -54,14 +51,9 @@ class Testing extends Activity {
 	 */
 	protected static int[] udpCellToStartTest() {
 		for (int cid : Constants.DEFAULT_CID_ARRAY) {
-			// System.out.println("********************************Testing
-			// cellToStartTest qInputBuffer[" + cid
-			// + "].list = " + model.qInputBuffer[cid].list);
 			if (model.qInputBuffer[cid].list.size() > 0) {
 				for (int tid = 0; tid < model.numTesters[cid]; tid++) {
 					Tester tester = model.rcTester[cid][tid];
-					// if (tester.status == Tester.Status.IDLE &&
-					// model.rvp.uTimeToFailure(cid) > uTestTime(cid)) {
 					if (tester.status == Tester.Status.IDLE) {
 						return new int[] { cid, tid };
 					}

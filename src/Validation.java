@@ -17,7 +17,7 @@ class Validation {
 		sds = new Seeds(rsg);
 
 		System.out.println("Validation\n");
-		// Validation for 1 hours
+		// Validation for 1 day
 		model = new SMLabTesting(startTime, startTime + 1440, new int[] { 5, 5, 5, 5, 5 },
 				Constants.INIT_NUM_SAMPLE_HOLDERS, LoadUnloadDevice.logicType.CURRENT_LOGIC, sds, true);
 
@@ -25,7 +25,7 @@ class Validation {
 
 		printOutput(model);
 		long endTime = System.currentTimeMillis();
-		System.out.println("代码运行时间：" + (endTime - startRealTime) + "ms");
+		System.out.println("Total running time：" + (endTime - startRealTime) + "ms");
 	}
 
 	private static void printOutput(SMLabTesting model) {
@@ -36,7 +36,7 @@ class Validation {
 		System.out.printf("  totalSample: %d\n", model.getTotalSample());
 		System.out.printf("  overtimedSample: %d\n", model.getOvertimedSample());
 		System.out.printf("  passedSample: %d\n", model.getNumPassedSample());
-		System.out.printf("  turnaroundUnatisfiedLevel: %.2f%%\n", model.getTurnaroundUnsatisfiedLevel() * 100);
+		System.out.printf("  turnaroundUnsatisfiedLevel: %.2f%%\n", model.getTurnaroundUnsatisfiedLevel() * 100);
 		double[] occupyingRateOfBufferArr = model.getOccupyingRateOfBuffer();
 		System.out.printf("  occupyingRateOfBuffer: %.2f%% %.2f%% %.2f%% %.2f%% %.2f%% %.2f%%\n",
 				occupyingRateOfBufferArr[0] * 100, occupyingRateOfBufferArr[1] * 100, occupyingRateOfBufferArr[2] * 100,

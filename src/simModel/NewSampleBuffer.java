@@ -23,19 +23,16 @@ class NewSampleBuffer {
 		return list.size();
 	}
 
-	protected void insertRushSample(Sample icSample) {
-		// get(i) ArrayList<Sample>;
+	protected void insertRushSample(Sample rushSample) {
 		int len = getN();
-		Sample sample;
 		int index = 0;
 		for (int i = 0; i < len; i++) {
-			sample = list.get(i);
-			if (sample.uRush == false) {
+			if (list.get(i).uRush == false) {
 				index = i;
 				break;
 			}
 		}
-		list.add(index, icSample);
+		list.add(index, rushSample);
 	}
 
 }

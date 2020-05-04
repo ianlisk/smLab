@@ -32,8 +32,6 @@ public class SMLabTesting extends AOSimulationModel {
 	// References to RVP and DVP objects
 	protected RVPs rvp; // Reference to rvp object - object
 						// created in constructor
-	// protected DVPs dvp = new DVPs(this); // Reference to dvp object
-	// protected UDPs udp = new UDPs(this);
 	protected Testing testing = new Testing();
 	// Output object
 	protected Output output = new Output(this);

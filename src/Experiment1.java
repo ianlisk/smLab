@@ -22,9 +22,9 @@ class Experiment1 {
 		sds = new Seeds(rsg);
 
 		System.out.println("Experiment\n");
-		// run for 60 days, calculate for the end 30 days after the warm-up
-		// period
-		model = new SMLabTesting(startTime, startTime + 1440 * 60, new int[] { 2, 2, 2, 2, 3 },
+		// run for 30 days, but the calculation will ignore the first 30 hours
+		// warm-up period
+		model = new SMLabTesting(startTime, startTime + 1440 * 30, new int[] { 1, 1, 1, 1, 1 },
 				Constants.INIT_NUM_SAMPLE_HOLDERS, LoadUnloadDevice.logicType.NEW_LOGIC, sds, false);
 
 		model.runSimulation();
@@ -42,7 +42,7 @@ class Experiment1 {
 		System.out.printf("  totalSample: %d\n", model.getTotalSample());
 		System.out.printf("  overtimedSample: %d\n", model.getOvertimedSample());
 		System.out.printf("  passedSample: %d\n", model.getNumPassedSample());
-		System.out.printf("  turnaroundUnatisfiedLevel: %.2f%%\n", model.getTurnaroundUnsatisfiedLevel() * 100);
+		System.out.printf("  turnaroundUnsatisfiedLevel: %.2f%%\n", model.getTurnaroundUnsatisfiedLevel() * 100);
 		double[] occupyingRateOfBufferArr = model.getOccupyingRateOfBuffer();
 		System.out.printf("  occupyingRateOfBuffer: %.2f%% %.2f%% %.2f%% %.2f%% %.2f%% %.2f%%\n",
 				occupyingRateOfBufferArr[0] * 100, occupyingRateOfBufferArr[1] * 100, occupyingRateOfBufferArr[2] * 100,

@@ -84,10 +84,6 @@ class Initialise extends ScheduledAction {
 		}
 		// transportationLoop
 		sequencePlaceSh2Loop(shIndex);
-		// randomPlaceSh2Loop(shIndex);
-		// System.out.println("************************* Initial
-		// udpPlaceSampleHolder rqTransportLoop.list = "
-		// + Arrays.toString(model.rqTransportationLoop.position));
 	}
 
 	private void sequencePlaceSh2Loop(int shNum) {
@@ -103,8 +99,9 @@ class Initialise extends ScheduledAction {
 	}
 
 	/**
-	 * sh is randomly distributed on the loop, and the sh sequence number is
-	 * stored as an array element in model.rqTransportationLoop.position
+	 * Abandoned. sh is randomly distributed on the loop, and the sh sequence
+	 * number is stored as an array element in
+	 * model.rqTransportationLoop.position
 	 */
 	private void randomPlaceSh2Loop(int shNum) {
 		// Generate integer sequence, range 0-47
